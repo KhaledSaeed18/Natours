@@ -101,12 +101,16 @@ const deleteTour = (req, res) => {
 }
 
 // Tours routes
-app.get('/api/v1/tours', getAllTours);
-app.get('/api/v1/tours/:id', getTour);
-app.post('/api/v1/tours', createTour);
-app.patch('/api/v1/tours/:id', updateTour);
-app.delete('/api/v1/tours/:id', deleteTour);
+app.route('/api/v1/tours')
+    .get(getAllTours)
+    .post(createTour);
 
+app.route('/api/v1/tours/:id')
+    .get(getTour)
+    .patch(updateTour)
+    .delete(deleteTour);
+
+// Server Initialization
 const port = 3000;
 app.listen(port, () => {
     console.log('Server is running on port 3000');
