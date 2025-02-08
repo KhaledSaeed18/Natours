@@ -13,7 +13,9 @@ app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
 // Third-party middleware (morgan)
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
 // Examples: 
 // GET /api/v1/tours 200 4.533 ms - 8589
 // GET /api/v1/tours2 404 2.538 ms - 152
