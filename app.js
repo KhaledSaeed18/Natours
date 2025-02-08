@@ -44,84 +44,78 @@ const getAllTours = (req, res) => {
     });
 }
 const getTour = (req, res) => {
-    (req, res) => {
-        const id = req.params.id * 1; // Convert string to number
+    const id = req.params.id * 1; // Convert string to number
 
-        // Find the tour with the given id
-        const tour = tours.find(el => el.id === id);
+    // Find the tour with the given id
+    const tour = tours.find(el => el.id === id);
 
-        if (!tour || id > tours.length) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Invalid ID'
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tour
-            }
+    if (!tour || id > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
         });
     }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour
+        }
+    });
+
 }
 const createTour = (req, res) => {
-    (req, res) => {
-        const id = req.params.id * 1; // Convert string to number
+    const id = req.params.id * 1; // Convert string to number
 
-        // Find the tour with the given id
-        const tour = tours.find(el => el.id === id);
+    // Find the tour with the given id
+    const tour = tours.find(el => el.id === id);
 
-        if (!tour || id > tours.length) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Invalid ID'
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tour
-            }
+    if (!tour || id > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
         });
     }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour
+        }
+    });
+
 }
 const updateTour = (req, res) => {
-    (req, res) => {
-        const id = req.params.id * 1;
+    const id = req.params.id * 1;
 
-        if (id > tours.length) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Invalid ID'
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tour: '<Updated tour here...>'
-            }
+    if (id > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
         });
     }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            tour: '<Updated tour here...>'
+        }
+    });
 }
 const deleteTour = (req, res) => {
-    (req, res) => {
-        const id = req.params.id * 1;
+    const id = req.params.id * 1;
 
-        if (id > tours.length) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Invalid ID'
-            });
-        }
-
-        res.status(204).json({
-            status: 'success',
-            data: null
+    if (id > tours.length) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Invalid ID'
         });
     }
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
 }
 
 // Users Functions
