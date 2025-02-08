@@ -1,9 +1,15 @@
-const { create } = require('domain');
 const express = require('express');
 const fs = require('fs');
 
 const app = express();
 app.use(express.json());
+
+// Middleware applied to all routes
+app.use((req, res, next) => {
+    console.log('Hello from the middleware');
+    next(); // Go to the next middleware
+    // ! If next() is not called, the request-response cycle will be stuck.
+});
 
 const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
