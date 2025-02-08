@@ -4,11 +4,18 @@ const fs = require('fs');
 const app = express();
 app.use(express.json());
 
-// Middleware applied to all routes
+// Middlewares applied to all routes:
 app.use((req, res, next) => {
     console.log('Hello from the middleware');
     next(); // Go to the next middleware
     // ! If next() is not called, the request-response cycle will be stuck.
+});
+
+app.use((req, res, next) => {
+    // Add a new property to the request object
+    // This property will be available in all the following middlewares and routes
+    req.requestTime = new Date().toISOString();
+    next();
 });
 
 const tours = JSON.parse(
@@ -17,6 +24,8 @@ const tours = JSON.parse(
 
 // Tours Functions
 const getAllTours = (req, res) => {
+    // Log the request time middleware
+    console.log(req.requestTime);
     res.status(200).json({
         status: 'success',
         results: tours.length,
