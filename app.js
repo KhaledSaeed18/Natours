@@ -1,8 +1,17 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
+
+// Middlewares
 app.use(express.json());
+
+// Third-party middleware (morgan)
+app.use(morgan('dev'));
+// Examples: 
+// GET /api/v1/tours 200 4.533 ms - 8589
+// GET /api/v1/tours2 404 2.538 ms - 152
 
 // Middlewares applied to all routes:
 app.use((req, res, next) => {
@@ -22,7 +31,7 @@ const tours = JSON.parse(
     fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// Tours Functions
+// Tours Functions 
 const getAllTours = (req, res) => {
     // Log the request time middleware
     console.log(req.requestTime);
