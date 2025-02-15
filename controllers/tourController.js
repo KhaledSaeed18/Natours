@@ -2,17 +2,6 @@ const Tour = require('./../models/tourModel');
 
 exports.getAllTours = async (req, res) => {
     try {
-        // const tours = await Tour.find({
-        //     duration: 5,
-        //     difficulty: 'easy'
-        // });
-        // OR: (Both used to filter data)
-        // const tours = await Tour
-        // .find()
-        // .where('duration').equals(5)
-        // .where('price').lt(597)
-        // .where('difficulty').equals('easy');
-
         // Build the query  
         const queryObj = { ...req.query }; // Copy the query object (destructuring)
 
@@ -22,7 +11,17 @@ exports.getAllTours = async (req, res) => {
         // Remove the excluded fields from the query object
         excludedFields.forEach(el => delete queryObj[el]);
 
-        const query = await Tour.find(queryObj);
+        // Advanced filtering
+        let queryStr = JSON.stringify(queryObj);
+        // Replace the operators with the MongoDB operators ($gte, $gt, $lte, $lt)
+        queryStr = queryStr.replace(
+            /\b(gte|gt|lte|lt)\b/g,
+            match => `$${match}`
+        );
+
+        // Find documents in the collection
+        // Parse the query string to a JSON object and find the documents
+        const query = await Tour.find(JSON.parse(queryStr));
 
         // Execute the query
         const tours = await query;
