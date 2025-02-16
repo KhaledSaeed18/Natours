@@ -43,6 +43,19 @@ exports.getAllTours = async (req, res) => {
             query = query.select('-__v');
         }
 
+        // Pagination
+        const page = req.query.page * 1 || 1; // Convert the string to a number, default page is 1
+        const limit = req.query.limit * 1 || 100; // Convert the string to a number, default limit is 100
+        const skip = (page - 1) * limit; // Number of documents to skip
+
+        query = query.skip(skip).limit(limit);
+
+        if (req.query.page) {
+            // Count the total number of documents
+            const numTours = await Tour.countDocuments();
+            if (skip >= numTours) throw new Error('This page does not exist');
+        }
+
         // Execute the query
         const tours = await query;
 
@@ -60,6 +73,14 @@ exports.getAllTours = async (req, res) => {
             message: err
         });
     }
+}
+
+exports.aliasTopTours = (req, res, next) => {
+    // Middleware to add query parameters to the request
+    req.query.limit = '5';
+    req.query.sort = '-ratingsAverage,price';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
 }
 
 exports.getTour = async (req, res) => {

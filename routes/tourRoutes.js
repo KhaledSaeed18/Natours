@@ -14,4 +14,9 @@ tourRouter
     .patch(tourController.updateTour)
     .delete(tourController.deleteTour);
 
+// Alias route
+tourRouter
+    .route('/top-5-cheap')
+    .get(tourController.aliasTopTours, tourController.getAllTours);
+
 module.exports = tourRouter;
