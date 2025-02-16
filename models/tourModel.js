@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -7,6 +8,7 @@ const tourSchema = new mongoose.Schema({
         unique: true,
         trim: true // Remove all white spaces in the beginning and end of the string
     },
+    slug: String,
     duration: {
         type: Number,
         required: [true, 'A tour must have a duration']
@@ -51,7 +53,11 @@ const tourSchema = new mongoose.Schema({
         default: Date.now(),
         select: false // Hide the field from the output
     },
-    startDates: [Date] // Array of Dates
+    startDates: [Date], // Array of Dates
+    secretTour: {
+        type: Boolean,
+        default: false
+    }
 }, {
     toJSON: {
         virtuals: true
@@ -60,7 +66,6 @@ const tourSchema = new mongoose.Schema({
         virtuals: true
     }
 }
-
 );
 
 // Virtual Properties
@@ -69,6 +74,61 @@ tourSchema
     .get(function () {
         return this.duration / 7;
     });
+
+// Document Middleware: runs before .save() and .create()
+// pre middleware executes before the command and post middleware executes after the command
+
+tourSchema.pre('save', function (next) {
+    // Create a slug for the tour name
+    this.slug = slugify(
+        this.name,
+        {
+            lower: true
+        }
+    );
+    next();
+});
+
+// tourSchema.post('save', function (doc, next) {
+//     console.log(doc);
+//     next();
+// });
+
+// Query Middleware (pre find hook)
+tourSchema.pre(/^find/, function (next) {
+    this.find(
+        {
+            secretTour: {
+                $ne: true
+            }
+        }
+    );
+    this.start = Date.now();
+    next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+    console.log(`Query took ${Date.now() - this.start} milliseconds`);
+    next();
+});
+
+// Aggregation Middleware, runs before the aggregation pipeline
+tourSchema.pre('aggregate', function (next) {
+    this.pipeline().unshift(
+        {
+            $match: {
+                secretTour: {
+                    $ne: true
+                }
+            }
+        }
+    );
+    console.log(this.pipeline());
+    next();
+});
+
+
+
 
 const Tour = mongoose.model('Tour', tourSchema);
 
