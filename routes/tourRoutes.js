@@ -3,6 +3,11 @@ const tourController = require('./../controllers/tourController');
 
 const tourRouter = express.Router();
 
+// Alias route
+tourRouter
+    .route('/top-5-cheap')
+    .get(tourController.aliasTopTours, tourController.getAllTours);
+
 tourRouter
     .route('/')
     .get(tourController.getAllTours)
@@ -13,10 +18,5 @@ tourRouter
     .get(tourController.getTour)
     .patch(tourController.updateTour)
     .delete(tourController.deleteTour);
-
-// Alias route
-tourRouter
-    .route('/top-5-cheap')
-    .get(tourController.aliasTopTours, tourController.getAllTours);
 
 module.exports = tourRouter;
