@@ -120,3 +120,60 @@ exports.deleteTour = async (req, res) => {
         });
     }
 }
+
+exports.getTourStats = async (req, res) => {
+    try {
+        // Aggregation pipeline
+        // aggregate() is a method that returns an aggregate object, used to define the aggregation pipeline
+        const stats = await Tour.aggregate([
+            { // Match stage, stage 1
+                $match: {
+                    ratingsAverage: { // Filter documents with ratingsAverage >= 4.5
+                        $gte: 4.5
+                    }
+                }
+            },
+            { // Group stage, stage 2
+                $group: {
+                    _id: {
+                        $toUpper: '$difficulty' // Group by difficulty
+                    },
+                    numTours: {
+                        $sum: 1 // Count the number of documents in each group
+                    },
+                    numRatings: {
+                        $sum: '$ratingsQuantity' // Sum the ratingsQuantity field
+                    },
+                    avgRating: {
+                        $avg: '$ratingsAverage' // Calculate the average of the ratingsAverage field
+                    },
+                    avgPrice: {
+                        $avg: '$price' // Calculate the average of the price field
+                    },
+                    minPrice: {
+                        $min: '$price' // Calculate the minimum of the price field
+                    },
+                    maxPrice: {
+                        $max: '$price' // Calculate the maximum of the price field
+                    }
+                }
+            },
+            { // Sort stage, stage 3
+                $sort: {
+                    avgPrice: 1 // Sort by average price in ascending order
+                }
+            }
+        ]);
+        res.status(200).json({
+            status: 'success',
+            data: {
+                stats
+            }
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        });
+    }
+}
