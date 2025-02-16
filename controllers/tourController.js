@@ -162,7 +162,13 @@ exports.getTourStats = async (req, res) => {
                 $sort: {
                     avgPrice: 1 // Sort by average price in ascending order
                 }
-            }
+            },
+            // { // Match stage, stage 4
+            //     $match: { (Remove the easy difficulty)
+            //         _id: {
+            //             $ne: 'EASY' // Exclude the easy difficulty
+            //         }
+            // }
         ]);
         res.status(200).json({
             status: 'success',
