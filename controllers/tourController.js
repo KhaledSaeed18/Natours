@@ -183,3 +183,66 @@ exports.getTourStats = async (req, res) => {
         });
     }
 }
+
+exports.getMonthlyPlan = async (req, res) => {
+    try {
+        const year = req.params.year * 1; // Convert the string to a number
+
+        const plan = await Tour.aggregate([
+            { // Unwind stage, stage 1
+                $unwind: '$startDates' // Deconstruct the startDates array
+            },
+            { // Match stage, stage 2
+                $match: {
+                    startDates: { // Filter documents with startDates in the given year
+                        $gte: new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`)
+                    }
+                }
+            },
+            { // Group stage, stage 3
+                $group: {
+                    _id: { // Group by month
+                        $month: '$startDates'
+                    },
+                    numTourStarts: {
+                        $sum: 1 // Count the number of documents in each group
+                    },
+                    tours: {
+                        $push: '$name' // Push the name field to the tours array
+                    }
+                }
+            },
+            { // AddFields stage, stage 4
+                $addFields: {
+                    month: '$_id' // Add the month field with the value of _id
+                }
+            },
+            { // Project stage, stage 5
+                $project: {
+                    _id: 0 // Exclude the _id field
+                }
+            },
+            { // Sort stage, stage 6
+                $sort: {
+                    numTourStarts: -1 // Sort by numTourStarts in descending order
+                }
+            },
+            { // Limit stage, stage 7
+                $limit: 12 // Limit the number of documents to 12
+            }
+        ]);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                plan
+            }
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail',
+            message: err
+        });
+    }
+}

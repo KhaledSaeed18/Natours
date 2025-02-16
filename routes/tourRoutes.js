@@ -13,6 +13,10 @@ tourRouter
     .get(tourController.getTourStats);
 
 tourRouter
+    .route('/monthly-plan/:year')
+    .get(tourController.getMonthlyPlan);
+
+tourRouter
     .route('/')
     .get(tourController.getAllTours)
     .post(tourController.createTour);
