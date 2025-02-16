@@ -21,7 +21,17 @@ exports.getAllTours = async (req, res) => {
 
         // Find documents in the collection
         // Parse the query string to a JSON object and find the documents
-        const query = await Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
+
+        // Sorting
+        if (req.query.sort) {
+            // Sort the documents by the given fields
+            const sortBy = req.query.sort.split(',').join(' ');
+            query = query.sort(sortBy);
+        } else {
+            // Default sorting, sort by creation date in descending order
+            query = query.sort('-createdAt');
+        }
 
         // Execute the query
         const tours = await query;
@@ -34,6 +44,7 @@ exports.getAllTours = async (req, res) => {
             }
         });
     } catch (err) {
+        console.log(err);
         res.status(404).json({
             status: 'fail',
             message: err
